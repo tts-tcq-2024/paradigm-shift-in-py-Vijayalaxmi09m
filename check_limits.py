@@ -26,7 +26,6 @@ class BatteryChecker:
 if __name__ == '__main__':
     checker = BatteryChecker()
     
-    # Complete tests covering all scenarios
     assert(checker.battery_is_ok(25, 70, 0.7) is True)
     assert(checker.battery_is_ok(50, 85, 0) is False)   # Temperature too high, SOC too high
     assert(checker.battery_is_ok(-5, 70, 0.5) is False)  # Temperature too low
