@@ -7,7 +7,7 @@ class BatteryChecker:
     def __init__(self, reporter=None):
         self.reporter = reporter or Reporter()
 
-    def check_parameter(self, parameter_name, value, min_value, max_value):
+    def _check_parameter(self, parameter_name, value, min_value, max_value):
         if value < min_value:
             self.reporter.report(parameter_name, 'too low')
             return False
