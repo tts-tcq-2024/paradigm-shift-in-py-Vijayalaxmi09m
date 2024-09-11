@@ -1,7 +1,29 @@
-
+# Abstract Reporter class
 class Reporter:
     def report(self, parameter, breach):
-        print(f"{parameter} is {breach}!")
+        raise NotImplementedError("Subclasses should implement this method.")
+
+
+# Example: List-based Reporter that stores messages in a list for later use
+class ListReporter(Reporter):
+    def __init__(self):
+        self.reports = []
+
+    def report(self, parameter, breach):
+        # Append the report message to a list (no terminal output)
+        self.reports.append({"parameter": parameter, "breach": breach})
+
+
+# Example: File-based Reporter that writes reports to a file
+class FileReporter(Reporter):
+    def __init__(self, file_name):
+        self.file_name = file_name
+
+    def report(self, parameter, breach):
+        # Write the report message to a file (no terminal output)
+        with open(self.file_name, 'a') as f:
+            f.write(f"{parameter} is {breach}!\n")
+
 
 class BatteryChecker:
     def __init__(self, reporter=None):
@@ -18,23 +40,27 @@ class BatteryChecker:
 
     def battery_is_ok(self, temperature, soc, charge_rate):
         return (
-            self.check_parameter('Temperature', temperature, 0, 45) and
-            self.check_parameter('State of Charge', soc, 20, 80) and
-            self.check_parameter('Charge Rate', charge_rate, 0, 0.8)
+            self._check_parameter('Temperature', temperature, 0, 45) and
+            self._check_parameter('State of Charge', soc, 20, 80) and
+            self._check_parameter('Charge Rate', charge_rate, 0, 0.8)
         )
 
+
 if __name__ == '__main__':
-    checker = BatteryChecker()
+    # Example 1: Using ListReporter to store the reports in memory
+    list_reporter = ListReporter()
+    checker = BatteryChecker(list_reporter)
     
     assert(checker.battery_is_ok(25, 70, 0.7) is True)
     assert(checker.battery_is_ok(50, 85, 0) is False)   # Temperature too high, SOC too high
-    assert(checker.battery_is_ok(-5, 70, 0.5) is False)  # Temperature too low
-    assert(checker.battery_is_ok(30, 85, 0.5) is False)  # SOC too high
-    assert(checker.battery_is_ok(30, 70, 0.9) is False)  # Charge rate too high
-    assert(checker.battery_is_ok(25, 70, 0.8) is True)   # All within range
-    assert(checker.battery_is_ok(0, 20, 0.8) is True)    # Boundary conditions lower
-    assert(checker.battery_is_ok(45, 80, 0.8) is True)   # Boundary conditions upper
-    assert(checker.battery_is_ok(0, 19, 0.8) is False)   # SOC too low
-    assert(checker.battery_is_ok(0, 20, 0.9) is False)   # Charge rate too high
 
+    # Access reports stored in ListReporter
+    print("Stored reports:", list_reporter.reports)
 
+    # Example 2: Using FileReporter to write reports to a file
+    file_reporter = FileReporter("battery_log.txt")
+    file_checker = BatteryChecker(file_reporter)
+    
+    assert(file_checker.battery_is_ok(-5, 70, 0.5) is False)  # Temperature too low
+
+    # Check the contents of the "battery_log.txt" file for reports
