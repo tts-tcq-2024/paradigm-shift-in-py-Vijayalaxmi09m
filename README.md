@@ -1,59 +1,80 @@
-# paradigm-shift-py
-# Programming Paradigms
+# Battery Management System (BMS) - Battery Parameter Checker  
 
-Electric Vehicles have BMS - Battery Management Systems
+## Overview
 
-[Here is an article that helps to understand the need for BMS](https://circuitdigest.com/article/battery-management-system-bms-for-electric-vehicles)
+Electric Vehicles (EVs) rely heavily on **Battery Management Systems (BMS)** to monitor and safeguard the battery during charging and usage. This project focuses on ensuring the **health of the battery** during the charging phase of **Li-ion batteries** by validating key parameters:
 
-[Wikipedia gives an idea of the types and topologies](https://en.wikipedia.org/wiki/Battery_management_system)
+1. **Temperature**  
+2. **State of Charge (SOC)**  
+3. **Charge Rate**
 
-[This site gives the optimum Charging-temperature limits](https://batteryuniversity.com/learn/article/charging_at_high_and_low_temperatures)
+The goal is to ensure the battery operates within safe limits while also providing **early warnings** to alert users when a parameter approaches critical values.
 
-[This abstract suggests a range for the optimum State of Charge](https://www.sciencedirect.com/science/article/pii/S2352484719310911)
+---
 
-[Here is a reference for the maximum charge rate](https://www.electronics-notes.com/articles/electronic_components/battery-technology/li-ion-lithium-ion-charging.php#:~:text=Constant%20current%20charge:%20In%20the%20first%20stage%20of,rate%20of%20a%20maximum%20of%200.8C%20is%20recommended.)
+## Purpose
 
-## Possible purpose
+A BMS performs various essential tasks for managing the health and performance of batteries, such as:  
+- **Protecting batteries** during charging: at home, in public places, or through regenerative braking in vehicles.  
+- **Estimating life, inventory, and supply chains** for battery production and usage.
 
-- Protect batteries while charging:
-at home, in public place, within vehicle / regenerative braking
-- Estimate life, inventory and supply chains
+The **charging phase** is critical, as improper conditions can reduce battery life or cause safety hazards. This project focuses on **charging-phase monitoring** to prevent such issues.
 
-## The Starting Point
+---
 
-We will explore the charging phase of Li-ion batteries to start with.
+## Issues Addressed by this Project  
 
-## Issues
+1. **High complexity** of a single function:  
+   - Refactored logic into smaller, reusable methods.  
+   - Cyclomatic complexity reduced by isolating parameter checks.
 
-- The code here has high complexity in a single function.
-- The tests are not complete - they do not cover all the needs of a consumer
+2. **Incomplete tests**:  
+   - All conditions are now covered, including boundary and edge cases.  
+   - Abnormal vitals are reported along with the **specific type of breach** (high/low).  
 
-## Tasks
+3. **Avoid duplication**:  
+   - Similar logic is merged into shared functions for simplicity and maintainability.  
 
-1. Reduce the cyclomatic complexity.
-1. Avoid duplication - functions that do nearly the same thing
-1. Complete the tests - cover all conditions.
-1. To treat, we need to know the abnormal vital and the breach -
-whether high or low. Add this capability.
-1. Add the ability to plug-in different reporters to this code.
+4. **Pluggable reporters**:  
+   - Reporters (like **FileReporter** and **ListReporter**) are now modular and can be plugged in dynamically.
 
-## The Exploration
+---
 
-How well does our code hold-out in the rapidly evolving EV space?
-Can we add new functionality without disturbing the old?
+## Programming Paradigms Used
 
-## The Landscape
+This project employs multiple **programming paradigms** to address different design needs effectively:
 
-- Limits may change based on new research
-- Technology changes due to obsolescence
-- Sensors may be from different vendors with different accuracy
-- Predicting the future requires Astrology!
+1. **Procedural Programming**:  
+   - For sequences where operations are performed step by step (e.g., parameter evaluation).
 
-## Keep it Simple
+2. **Functional Programming**:  
+   - Shared logic, such as warning thresholds, is abstracted into pure functions that map inputs to outputs.
 
-Shorten the Semantic distance
+3. **Object-Oriented Programming**:  
+   - Encapsulates state (parameters, limits) and actions (evaluation, reporting) inside classes like `BatteryChecker`.
 
-- Procedural to express sequence
-- Functional to express relation between input and output
-- Object oriented to encapsulate state with actions
-- Apect oriented to capture repeating aspects
+4. **Aspect-Oriented Programming**:  
+   - Repeating aspects like **reporting breaches** and **early warnings** are captured and modularized into reporters.
+
+---
+
+## Key Features
+
+1. **Early Warning System**:
+   - A **5% tolerance** is applied to the upper threshold of parameters to provide early warnings.
+   - Example for SOC (range: 20 to 80):
+     - **20 to 24**: *"Approaching discharge"*
+     - **76 to 80**: *"Approaching charge-peak"*
+
+2. **Dynamic Reporters**:
+   - **FileReporter**: Logs messages to a file.
+   - **ListReporter**: Collects reports in memory for testing.
+   - Additional reporters can be implemented and plugged in without changing core logic.
+
+3. **Abnormal Vital Reporting**:
+   - The system reports **which parameter breached** and whether it was **too high** or **too low**.  
+
+4. **Configurable Warning System**:
+   - Warnings are **optional** per parameter, and new parameters can be added easily in the future.
+
+---
